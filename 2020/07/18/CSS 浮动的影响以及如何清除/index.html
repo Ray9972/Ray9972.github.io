@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><meta name="author" content="Ray9972"><meta name="renderer" content="webkit"><meta name="copyright" content="Ray9972"><meta name="keywords" content="Ray's Blog"><meta name="description" content="Welcome to My Blog!"><meta name="Cache-Control" content="no-cache"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>CSS 浮动的影响以及如何清除 · Ray's Blog</title><link rel="stylesheet" href="/css/style.css?v=2018.7.9"><link rel="stylesheet" href="/css/animation.css?v=2018.7.9"><link rel="icon" href="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=284103790,1405010235&amp;fm=26&amp;gp=0.jpg"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.5.6"><!-- scripts--><script>(function( w ){
+  "use strict";
+  // rel=preload support test
+  if( !w.loadCSS ){
+    w.loadCSS = function(){};
+  }
+  // define on the loadCSS obj
+  var rp = loadCSS.relpreload = {};
+  // rel=preload feature support test
+  // runs once and returns a function for compat purposes
+  rp.support = (function(){
+    var ret;
+    try {
+      ret = w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      ret = false;
+    }
+    return function(){
+      return ret;
+    };
+  })();
+
+  // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+  // then change that media back to its intended value on load
+  rp.bindMediaToggle = function( link ){
+    // remember existing media attr for ultimate state, or default to 'all'
+    var finalMedia = link.media || "all";
+
+    function enableStylesheet(){
+      link.media = finalMedia;
+    }
+
+    // bind load handlers to enable media
+    if( link.addEventListener ){
+      link.addEventListener( "load", enableStylesheet );
+    } else if( link.attachEvent ){
+      link.attachEvent( "onload", enableStylesheet );
+    }
+
+    // Set rel and non-applicable media type to start an async request
+    // note: timeout allows this to happen async to let rendering continue in IE
+    setTimeout(function(){
+      link.rel = "stylesheet";
+      link.media = "only x";
+    });
+    // also enable media after 3 seconds,
+    // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+    setTimeout( enableStylesheet, 3000 );
+  };
+
+  // loop through link elements in DOM
+  rp.poly = function(){
+    // double check this to prevent external calls from running
+    if( rp.support() ){
+      return;
+    }
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      // qualify links to those with rel=preload and as=style attrs
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+        // prevent rerunning on link
+        link.setAttribute( "data-loadcss", true );
+        // bind listeners to toggle media back
+        rp.bindMediaToggle( link );
+      }
+    }
+  };
+
+  // if unsupported, run the polyfill
+  if( !rp.support() ){
+    // run once at least
+    rp.poly();
+
+    // rerun poly on an interval until onload
+    var run = w.setInterval( rp.poly, 500 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    } else if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    }
+  }
+
+
+  // commonjs
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ) );</script><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" defer></script><script src="/js/main.js?v=2018.7.9" defer></script><!-- fancybox--><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script><!-- busuanzi--><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script><meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="Ray's Blog" type="application/atom+xml">
+</head><body><section class="profile-close" id="cxo-profile"><div class="profile-avatar"><i class="fa fa-caret-left"></i><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=284103790,1405010235&amp;fm=26&amp;gp=0.jpg"></div><!--.profile-saying
+  i.fa.fa-comment
+  .saying--><div class="cxo-profile-inner"><div class="profile-name">Ray997</div><div class="profile-signature">the winter is coming</div><div class="friends"><div>FRIENDS</div><span><a href="//github.com/" target="_black">friendA</a></span><span><a href="//github.com/" target="_black">friendB</a></span><span><a href="//github.com/" target="_black">friendC</a></span></div><div class="read-progress"></div></div></section><header id="cxo-intro" style="height: 70vh;background-image: url(/img/intro/index-bg.png);"><nav id="cxo-intro-nav"><section><div class="intro-nav-title"><a href="/">Ray's Learning Blog</a></div><div class="intro-nav-label-box"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div><i class="fa fa-bars intro-nav-menu"><div class="intro-nav-drop"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div></i><div class="clear"></div></section></nav><h1 class="post-title">CSS 浮动的影响以及如何清除</h1><div class="post-intros"><div class="post-intro-meta"><span class="post-intro-time"><i class="post-intro-calendar fa fa-calendar"></i><span>2020-07-18</span></span></div></div></header><article class="cxo-up" id="cxo-content-outer"><section id="cxo-content-inner"><article class="article-entry" id="post"><h1 id="CSS中浮动的影响以及如何清除"><a href="#CSS中浮动的影响以及如何清除" class="headerlink" title="CSS中浮动的影响以及如何清除"></a>CSS中浮动的影响以及如何清除</h1><p>对于刚接触CSS的我来说，浮动属性基本是用来使块元素同行展示的。</p>
+<p>但是float之后却产生了许多问题。</p>
+<h2 id="元素浮动后产生的问题"><a href="#元素浮动后产生的问题" class="headerlink" title="元素浮动后产生的问题"></a>元素浮动后产生的问题</h2><h3 id="问题一：父元素高度塌陷"><a href="#问题一：父元素高度塌陷" class="headerlink" title="问题一：父元素高度塌陷"></a>问题一：父元素高度塌陷</h3><p>现在来写一个例子：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="selector-tag">style</span>&gt;</span><br><span class="line">        <span class="selector-class">.box</span> &#123;</span><br><span class="line">            <span class="attribute">border</span>: <span class="number">5px</span> solid <span class="number">#333</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="selector-class">.box1</span> &#123;</span><br><span class="line">            <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">            <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">            <span class="attribute">background-color</span>: tomato;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="selector-class">.box2</span> &#123;</span><br><span class="line">            <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">            <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">            <span class="attribute">background-color</span>: saddlebrown;</span><br><span class="line">        &#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;div class="box"&gt;</span><br><span class="line">        &lt;div class="box1"&gt;我是第一个盒子&lt;/div&gt;</span><br><span class="line">        &lt;div class="box2"&gt;我是第二个盒子&lt;/div&gt;</span><br><span class="line">    &lt;/div&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这是子元素未进行浮动时,父元素高度由子元素撑开</p>
+<p><img src="C:%5CUsers%5CAdministrator%5CDesktop%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200718095535.png" alt="微信图片_20200718095535"></p>
+<p>当为两个子元素设置<code>float:left</code>后显示为</p>
+<p><img src="C:%5CUsers%5CAdministrator%5CDesktop%5C%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20200718100136.png" alt=""></p>
+<p>这时父元素的高度消失了，上下边框合并，这就是所谓的的<strong>高度崩塌</strong></p>
+<h3 id="问题二：浮动元素之后的元素忽视浮动元素"><a href="#问题二：浮动元素之后的元素忽视浮动元素" class="headerlink" title="问题二：浮动元素之后的元素忽视浮动元素"></a>问题二：浮动元素之后的元素忽视浮动元素</h3><p>这个就不贴图了，浮动元素脱离文档流之后，如果后面还有元素，则会无视浮动元素存在，经常发生的就是两者重叠或后面元素被覆盖。</p>
+<h2 id="常用的几种清除浮动的方法"><a href="#常用的几种清除浮动的方法" class="headerlink" title="常用的几种清除浮动的方法"></a>常用的几种清除浮动的方法</h2><h3 id="方法一："><a href="#方法一：" class="headerlink" title="方法一："></a>方法一：</h3><h4 id="为父元素添加高度"><a href="#为父元素添加高度" class="headerlink" title="为父元素添加高度"></a>为父元素添加高度</h4><p>在没有设置父元素的高度时，高度为<code>height:auto</code>，这时是由子元素撑开的。设置高度后解决了父元素高度塌陷问题。</p>
+<p>缺陷:并没有解决第二个问题，以及高度固定后的维护问题。</p>
+<h3 id="方法二："><a href="#方法二：" class="headerlink" title="方法二："></a>方法二：</h3><h4 id="在每一个浮动元素后一个空的div元素，设置clear-both"><a href="#在每一个浮动元素后一个空的div元素，设置clear-both" class="headerlink" title="在每一个浮动元素后一个空的div元素，设置clear:both"></a>在每一个浮动元素后一个空的div元素，设置<code>clear:both</code></h4><p>clear属性是设置在空元素上的，float会影响其他的相邻元素，但是clear只会影响自身，不会对他的相邻元素产生影响；他的要求是保证自己的两边不会有浮动元素；</p>
+<p><code>clear:left</code>代表在左侧不会有浮动元素，类似的right是在右侧不会有浮动元素；<code>clear：both</code>是表示在元素的两侧不存在浮动元素；在空的div块中使用这个属性可以保证这个空div块会下移，此时就可以撑开父元素；同时这个空div块也是一个常规的块级标签因此也会良好的解决问题二；</p>
+<p>缺陷：为了布局添加了毫无意义的标签，如果有大量的毫无意义的空div标签那么将会造成极大的冗余。</p>
+<h3 id="方法三："><a href="#方法三：" class="headerlink" title="方法三："></a>方法三：</h3><h4 id="将父元素一起浮动"><a href="#将父元素一起浮动" class="headerlink" title="将父元素一起浮动"></a>将父元素一起浮动</h4><p>只能解决问题一，无法解决问题二.而且父元素浮动后很可能整个板块都要浮动。不推荐此方法。</p>
+<h3 id="方法四："><a href="#方法四：" class="headerlink" title="方法四："></a>方法四：</h3><h4 id="为父元素设置overflow-hidden"><a href="#为父元素设置overflow-hidden" class="headerlink" title="为父元素设置overflow:hidden"></a>为父元素设置<code>overflow:hidden</code></h4><p>可以通过设置BFC的方式，清除浮动。</p>
+<p>（点此处跳转至：<a href="">关于BFC</a>）</p>
+<p>如果子元素的尺寸大于父元素，或者子元素中的内容过多，那么多出来的这一部分将不会溢出，也不会显示出来，会直接被hidden起来。</p>
+<h3 id="方法五："><a href="#方法五：" class="headerlink" title="方法五："></a>方法五：</h3><h4 id="使用伪元素-after"><a href="#使用伪元素-after" class="headerlink" title="使用伪元素::after"></a>使用伪元素::after</h4><p>（点此处跳转至：[::after的使用方法](CSS 伪元素before和after的使用.md)）</p>
+</article><!-- lincense--><div class="license-wrapper"><p> <span>Author:  </span><a href="https://Ray9972.github.io.git">Ray9972</a></p><p> <span>Link:  </span><a href="https://ray9972.github.io.git/2020/07/18/CSS%20%E6%B5%AE%E5%8A%A8%E7%9A%84%E5%BD%B1%E5%93%8D%E4%BB%A5%E5%8F%8A%E5%A6%82%E4%BD%95%E6%B8%85%E9%99%A4/">https://ray9972.github.io.git/2020/07/18/CSS%20%E6%B5%AE%E5%8A%A8%E7%9A%84%E5%BD%B1%E5%93%8D%E4%BB%A5%E5%8F%8A%E5%A6%82%E4%BD%95%E6%B8%85%E9%99%A4/</a></p><p> <span>Copyright:  </span><span>All articles in this blog are licensed under <a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/3.0" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.</span></p></div><div class="post-paginator"><a class="nextSlogan" href="/2020/07/18/CSS%20%E4%BC%AA%E5%85%83%E7%B4%A0before%E5%92%8Cafter%E7%9A%84%E4%BD%BF%E7%94%A8/" title="CSS 伪元素before和after的使用"><span>NextPost ></span><br><span class="nextTitle">CSS 伪元素before和after的使用</span></a><div class="clear"></div></div><div id="comment"></div></section></article><footer id="cxo-footer-outer"><div id="cxo-footer-inner"><p class="footer-container"><span>Site by </span><a href="http://hexo.io" target="_blank" rel="noopener"><span>Hexo</span></a><span> | theme </span><a href="https://github.com/Longlongyu/hexo-theme-Cxo" target="_blank" rel="noopener"><span>Cxo</span></a></p><i class="fa fa-user"> </i><span id="busuanzi_value_site_uv"></span><span> | </span><i class="fa fa-eye"> </i><span id="busuanzi_value_site_pv"></span></div></footer><!-- catelog--><div class="toc-wrapper" style="top: 70vh;"><div class="toc-catalog"><i class="fa fa-list"> </i><span>CATALOG</span></div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#CSS中浮动的影响以及如何清除"><span class="toc-number">1.</span> <span class="toc-text">CSS中浮动的影响以及如何清除</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#元素浮动后产生的问题"><span class="toc-number">1.1.</span> <span class="toc-text">元素浮动后产生的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题一：父元素高度塌陷"><span class="toc-number">1.1.1.</span> <span class="toc-text">问题一：父元素高度塌陷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题二：浮动元素之后的元素忽视浮动元素"><span class="toc-number">1.1.2.</span> <span class="toc-text">问题二：浮动元素之后的元素忽视浮动元素</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用的几种清除浮动的方法"><span class="toc-number">1.2.</span> <span class="toc-text">常用的几种清除浮动的方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方法一："><span class="toc-number">1.2.1.</span> <span class="toc-text">方法一：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#为父元素添加高度"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">为父元素添加高度</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法二："><span class="toc-number">1.2.2.</span> <span class="toc-text">方法二：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#在每一个浮动元素后一个空的div元素，设置clear-both"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">在每一个浮动元素后一个空的div元素，设置clear:both</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法三："><span class="toc-number">1.2.3.</span> <span class="toc-text">方法三：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#将父元素一起浮动"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">将父元素一起浮动</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法四："><span class="toc-number">1.2.4.</span> <span class="toc-text">方法四：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#为父元素设置overflow-hidden"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">为父元素设置overflow:hidden</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法五："><span class="toc-number">1.2.5.</span> <span class="toc-text">方法五：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#使用伪元素-after"><span class="toc-number">1.2.5.1.</span> <span class="toc-text">使用伪元素::after</span></a></li></ol></li></ol></li></ol></li></ol></div><!-- top--><i class="fa fa-arrow-up close" id="go-up" aria-hidden="true"></i></body></html>
